@@ -66,6 +66,7 @@ export const getPreset = (settings: LoomSettings) =>
 export type SearchResultState = "result" | "ancestor" | "none" | null;
 
 export interface Node {
+  author: string | null;
   text: string;
   parentId: string | null;
   collapsed: boolean;

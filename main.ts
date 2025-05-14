@@ -185,6 +185,7 @@ export default class LoomPlugin extends Plugin {
   ): [string, Node] {
     const id = uuidv4();
     const node: Node = {
+      author: "N/A",
       text,
       parentId,
       collapsed: false,
@@ -197,6 +198,7 @@ export default class LoomPlugin extends Plugin {
 
   initializeNoteState(file: TFile) {
     const [rootId, root] = this.newNode(this.editor.getValue(), null);
+    root.author = "genesis";
     this.state[file.path] = {
       current: rootId,
       hoisted: [] as string[],
@@ -1324,6 +1326,8 @@ export default class LoomPlugin extends Plugin {
 
     // console.log("rawCompletions", rawCompletions);
 
+    var preset = getPreset(this.settings);
+
     // escape and clean up the completions
     const completions = rawCompletions.map((completion: string) => {
       if (!completion) completion = ""; // empty completions are null, apparently
@@ -1334,7 +1338,7 @@ export default class LoomPlugin extends Plugin {
       // otherwise, deduplicate adjacent spaces between the prompt and completion
       if (
         ["azure-chat", "openai-chat"].includes(
-          getPreset(this.settings).provider
+          preset.provider
         )
       ) {
         if (!trailingSpace) completion = " " + completion;
@@ -1348,6 +1352,7 @@ export default class LoomPlugin extends Plugin {
     let ids = [];
     for (let completion of completions) {
       const [id, node] = this.newNode(completion, rootNode, true);
+      node.author = preset.name;
       state.nodes[id] = node;
       ids.push(id);
     }
